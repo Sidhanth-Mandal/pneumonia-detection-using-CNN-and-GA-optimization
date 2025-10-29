@@ -1,0 +1,36 @@
+{
+  "best_hyperparameters": {
+    "learning_rate": 0.0005902552855603126,
+    "batch_size": 16,
+    "num_filters": 16,
+    "dropout_rate": 0.20231447421237492,
+    "weight_decay": 0.0005252316752006056,
+    "augmentation": {
+      "horizontal_flip": true,
+      "rotation": 0,
+      "brightness": 0,
+      "contrast": 0
+    }
+  },
+  "best_fitness": 100.0,
+  "history": [
+    {
+      "generation": 1,
+      "best_fitness": 89.625,
+      "avg_fitness": 76.07384289528167,
+      "std_fitness": 9.738578639771738
+    },
+    {
+      "generation": 2,
+      "best_fitness": 89.625,
+      "avg_fitness": 80.33348703403766,
+      "std_fitness": 7.858344340735387
+    },
+    {
+      "generation": 3,
+      "best_fitness": 100.0,
+      "avg_fitness": 77.9987026808331,
+      "std_fitness": 16.0698094293591
+    }
+  ]
+}
