@@ -9,6 +9,7 @@ from augmentation import get_transforms
 from Dataset import PneumoniaDataset
 from CNN_architecture import PneumoniaCNN
 import copy
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -66,17 +67,33 @@ def evaluate(model, dataloader, criterion, device):
     epoch_loss = running_loss / len(dataloader)
     epoch_acc = 100 * correct / total
     
-    # Calculate additional metrics
-    tp = sum((p == 1 and l == 1) for p, l in zip(all_preds, all_labels))
-    tn = sum((p == 0 and l == 0) for p, l in zip(all_preds, all_labels))
-    fp = sum((p == 1 and l == 0) for p, l in zip(all_preds, all_labels))
-    fn = sum((p == 0 and l == 1) for p, l in zip(all_preds, all_labels))
+    # # Calculate additional metrics
+    # tp = sum((p == 1 and l == 1) for p, l in zip(all_preds, all_labels))
+    # tn = sum((p == 0 and l == 0) for p, l in zip(all_preds, all_labels))
+    # fp = sum((p == 1 and l == 0) for p, l in zip(all_preds, all_labels))
+    # fn = sum((p == 0 and l == 1) for p, l in zip(all_preds, all_labels))
     
-    precision = tp / (tp + fp) if (tp + fp) > 0 else 0
-    recall = tp / (tp + fn) if (tp + fn) > 0 else 0
-    f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
+    # precision = tp / (tp + fp) if (tp + fp) > 0 else 0
+    # recall = tp / (tp + fn) if (tp + fn) > 0 else 0
+    # f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
     
-    return epoch_loss, epoch_acc, precision, recall, f1
+    # return epoch_loss, epoch_acc, precision, recall, f1
+
+
+    
+
+    # all_preds, all_labels are lists/1D numpy arrays of 0/1 integers
+    accuracy = accuracy_score(all_labels, all_preds)
+    macro_f1 = f1_score(all_labels, all_preds, average='macro')      # recommended for GA fitness
+    #weighted_f1 = f1_score(all_labels, all_preds, average='weighted')
+
+    # if you still want to report class-wise metrics:
+    precision_per_class = precision_score(all_labels, all_preds, average=None)  # array([prec_class0, prec_class1])
+    recall_per_class    = recall_score(all_labels, all_preds, average=None)     # array([rec_class0, rec_class1])
+
+    return epoch_loss, accuracy,precision_per_class,recall_per_class, macro_f1
+
+
 
 
 def train_model(hyperparams: Dict, data_path: str, epochs: int = 10):
@@ -111,7 +128,7 @@ def train_model(hyperparams: Dict, data_path: str, epochs: int = 10):
     
     for epoch in range(epochs):
         train_loss, train_acc = train_epoch(model, train_loader, criterion, optimizer, device)
-        val_loss, val_acc, precision, recall, f1 = evaluate(model, val_loader, criterion, device)
+        val_loss, val_acc,precision_score , recall_score, f1 = evaluate(model, val_loader, criterion, device)
         
         if val_acc > best_val_acc:
             best_val_acc = val_acc
